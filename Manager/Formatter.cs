@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,14 @@ namespace Manager
                 /// SPN format
                 parts = winLogonName.Split('\\');
                 return parts[1];
+            }
+            else if (winLogonName.Contains("CN"))
+            {
+                // sertifikati, name je formiran kao CN=imeKorisnika;
+                int startIndex = winLogonName.IndexOf("=") + 1;
+                int endIndex = winLogonName.IndexOf(";");
+                string s = winLogonName.Substring(startIndex, endIndex - startIndex);
+                return s;
             }
             else
             {

@@ -13,9 +13,5 @@ namespace Contracts
 	{
 		[OperationContract]
 		void TestCommunication();
-       [OperationContract]
-        string AddPublisher(Common.Publisher pub);
-        [OperationContract]
-        string AddSubscriber(Subscriber sub);
     }
 }

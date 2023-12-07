@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manager", "Manager\Manager.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{E3440E57-E1CB-4E1D-906E-7B4061E9C169}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AES", "AES\AES.csproj", "{CBC294FC-9AE0-4992-9612-A62E2EE579D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,14 @@ Global
 		{E3440E57-E1CB-4E1D-906E-7B4061E9C169}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E3440E57-E1CB-4E1D-906E-7B4061E9C169}.Release|x64.ActiveCfg = Release|Any CPU
 		{E3440E57-E1CB-4E1D-906E-7B4061E9C169}.Release|x64.Build.0 = Release|Any CPU
+		{CBC294FC-9AE0-4992-9612-A62E2EE579D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBC294FC-9AE0-4992-9612-A62E2EE579D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBC294FC-9AE0-4992-9612-A62E2EE579D2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CBC294FC-9AE0-4992-9612-A62E2EE579D2}.Debug|x64.Build.0 = Debug|Any CPU
+		{CBC294FC-9AE0-4992-9612-A62E2EE579D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBC294FC-9AE0-4992-9612-A62E2EE579D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBC294FC-9AE0-4992-9612-A62E2EE579D2}.Release|x64.ActiveCfg = Release|Any CPU
+		{CBC294FC-9AE0-4992-9612-A62E2EE579D2}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

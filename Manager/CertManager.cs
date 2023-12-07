@@ -39,43 +39,5 @@ namespace PubSubEngine
             return null;
         }
 
-     
-
-
-        /*public static void CreateSelfSignedSertifikate()
-        {
-            srvCer = null;
-            // Generate a new RSA key pair
-            using (RSA rsa = RSA.Create())
-            {
-                // Create a certificate request with the RSA key pair
-                CertificateRequest request = new CertificateRequest("CN=pubsubCN1", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-
-                // Set additional properties of the certificate
-                request.CertificateExtensions.Add(
-                    new X509BasicConstraintsExtension(false, false, 0, true));
-
-                request.CertificateExtensions.Add(
-                    new X509EnhancedKeyUsageExtension(
-                        new OidCollection { new Oid("1.3.6.1.5.5.7.3.1") }, true));
-
-                // Set the validity period of the certificate
-                DateTimeOffset notBefore = DateTimeOffset.UtcNow;
-                DateTimeOffset notAfter = notBefore.AddYears(1);
-
-                // Create a self-signed certificate from the certificate request
-                X509Certificate2 certificate = request.CreateSelfSigned(notBefore, notAfter);
-
-                // Save the certificate to a file
-                string certFilePath = "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.19041.0\\x86\\pubsubCN1.pfx";
-                string certPassword = "1234"; // Set a password to protect the private key
-                File.WriteAllBytes(certFilePath, certificate.Export(X509ContentType.Pfx, certPassword));
-
-                Console.WriteLine("Self-signed certificate created successfully.");
-                Console.WriteLine($"Certificate saved to: {certFilePath}");
-                srvCer = "pubsubCN1.pfx";
-            }
-        }*/
-
     }
 }

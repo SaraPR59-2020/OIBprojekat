@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using Common;
+using Contracts;
 using Manager;
 using PubSubEngine;
 using System;
@@ -12,10 +13,16 @@ using System.Threading.Tasks;
 
 namespace Subscriber
 {
-    public class SubscriberClient : ChannelFactory<IWCFContract>, IWCFContract, IDisposable
+    public class SubscriberClient : ChannelFactory<IEngine>, IDisposable
 
     {
-        IWCFContract factory;
+        IEngine factory;
+
+        public SubscriberClient(NetTcpBinding binding, string address) : base(binding, address) 
+        {
+            factory = this.CreateChannel();
+        }
+
 
         public SubscriberClient(NetTcpBinding binding, EndpointAddress address)
             : base(binding, address)
@@ -30,48 +37,54 @@ namespace Subscriber
 
             /// Set appropriate client's certificate on the channel. Use CertManager class to obtain the certificate based on the "cltCertCN"
             this.Credentials.ClientCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, cltCertCN);
-
             factory = this.CreateChannel();
         }
 
-        public void TestCommunication()
+         public void TestCommunication()
+         {
+             try
+             {
+                 factory.TestCommunication();
+             }
+             catch (Exception e)
+             {
+                 Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
+             }
+         }
+
+         public void Dispose()
+         {
+             if (factory != null)
+             {
+                 factory = null;
+             }
+
+             this.Close();
+         }
+
+        public void Subscribe(string alarmTypes, string clientAddress)
         {
             try
             {
-                factory.TestCommunication();
+                factory.Subscribe(alarmTypes, clientAddress); //greska
             }
             catch (Exception e)
             {
-                Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
+                Console.WriteLine("Error: {0}", e);
+                Console.ReadLine();
             }
         }
 
-        public void Dispose()
-        {
-            if (factory != null)
-            {
-                factory = null;
-            }
-
-            this.Close();
-        }
-
-        public string AddPublisher(Common.Publisher pub)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string AddSubscriber(Common.Subscriber sub)
+        public void Unsubscribe(string clientAddress)
         {
             try
             {
-                string result = factory.AddSubscriber(sub);
-                return result;
+                factory.Unsubscribe(clientAddress);
             }
             catch (Exception e)
             {
-                Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
-                return "error";
+                Console.WriteLine("Error: {0}", e);
+                Console.ReadLine();
             }
         }
     }

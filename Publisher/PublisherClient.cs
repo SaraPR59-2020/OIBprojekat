@@ -12,13 +12,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Manager;
 using Formatter = Manager.Formatter;
+using System.IO;
+using System.Security.Cryptography;
+using AES;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace Publisher
 {
-    public class PublisherClient : ChannelFactory<IWCFContract>, IWCFContract, IDisposable
+    public class PublisherClient : ChannelFactory<IEngine>, IDisposable
 
     {
-        IWCFContract factory;
+        IEngine factory;
 
         public PublisherClient(NetTcpBinding binding, EndpointAddress address)
             : base(binding, address)
@@ -49,33 +55,31 @@ namespace Publisher
             }
         }
 
-        public void Dispose()
-        {
-            if (factory != null)
-            {
-                factory = null;
-            }
-
-            this.Close();
-        }
-
-        public string AddPublisher(Common.Publisher pub)
+        public void SendDataToEngine(string alarm, byte[] sign)
         {
             try
             {
-                string result = factory.AddPublisher(pub);
-                return result;
+                string key = AES.SecretKey.GenerateKey();
+                Console.WriteLine(alarm);
+                Console.WriteLine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName);
+                string startupPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keyPubEng.txt");
+                SecretKey.StoreKey(key, startupPath);
+                //pravim bajtove, pozovem encr, vrati mi 
+                //factory.SendDataToEngine(AES.Encryption.EncryptString(alarm, key), sign); //greska
+                /*string encryptedString = AES.Encryption.EncryptString(alarm, key);
+                byte[] encryptedBytes = Encoding.UTF8.GetBytes(encryptedString);
+                byte[] combinedBytes = new byte[encryptedBytes.Length + sign.Length];
+                factory.SendDataToEngine(alarm, combinedBytes);*/
+                string alarmm = AES.Encryption.EncryptString(alarm, key);
+                String str1 = BitConverter.ToString(sign);
+                Console.WriteLine(str1);
+                factory.SendDataToEngine(alarmm, sign);
             }
             catch (Exception e)
             {
-                Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
-                return "error";
+                Console.WriteLine("Error: {0}", e);
             }
         }
 
-        public string AddSubscriber(Subscriber sub)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

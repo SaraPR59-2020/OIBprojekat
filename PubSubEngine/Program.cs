@@ -10,6 +10,7 @@ using System.ServiceModel.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.IdentityModel.Tokens;
 using Manager;
+using Common;
 
 namespace PubSubEngine
 {
@@ -26,8 +27,7 @@ namespace PubSubEngine
 
             string address = "net.tcp://localhost:4001/PubSubService";
             ServiceHost host = new ServiceHost(typeof(PubSubService));
-            host.AddServiceEndpoint(typeof(IWCFContract), binding, address);
-            //Console.ReadLine();
+            host.AddServiceEndpoint(typeof(IEngine), binding, address);
 
             ///Custom validation mode enables creation of a custom validator - CustomCertificateValidator
             host.Credentials.ClientCertificate.Authentication.CertificateValidationMode = X509CertificateValidationMode.Custom;
@@ -39,7 +39,7 @@ namespace PubSubEngine
 
             ///Set appropriate service's certificate on the host. Use CertManager class to obtain the certificate based on the "srvCertCN"
             host.Credentials.ServiceCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, srvCertCN);
-            Console.WriteLine(CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, srvCertCN));
+            //Console.WriteLine(CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, srvCertCN));
 
             
             //host.Open();
@@ -47,8 +47,6 @@ namespace PubSubEngine
 
             try
             {
-                //Console.WriteLine("radi");
-                //Console.ReadLine();
                 host.Open();
                 Console.WriteLine("+++++++++ PUBLISH-SUBSCRIBE SERVIS JE USPESNO POKRENUT +++++++++");
                 Console.WriteLine("Pitisnite [ENTER] za prekid.");
@@ -60,6 +58,7 @@ namespace PubSubEngine
                 Console.WriteLine("[StackTrace] {0}", e.StackTrace);
                 Console.ReadLine();
             }
+            
         }
     }
 }
