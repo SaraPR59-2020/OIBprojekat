@@ -39,7 +39,7 @@ namespace AES
                       cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
                       Console.WriteLine("read"); //provera
                       decryptedString = BitConverter.ToString(decryptedBytes);
-                      Console.WriteLine("4"); //provera
+                      Console.WriteLine("4"); //provera 
                     
                 }
 
