@@ -53,6 +53,7 @@ namespace PubSubEngine
                 Console.WriteLine("+++++++++ PUBLISH-SUBSCRIBE SERVIS JE USPESNO POKRENUT +++++++++");
                 Console.WriteLine("Pitisnite [ENTER] za prekid.");
                 Console.WriteLine("Hello from Sara!");
+                Console.WriteLine("Hello from Sanja!");
                 Console.ReadKey();
             }
             catch (Exception e)
