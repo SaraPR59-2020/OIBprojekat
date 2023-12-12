@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlarmMessage.cs" />
+    <Compile Include="Audit.cs" />
     <Compile Include="CertManager.cs" />
     <Compile Include="ClientsCertValidator.cs" />
     <Compile Include="DigitalSignature.cs" />

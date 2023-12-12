@@ -10,8 +10,8 @@ namespace Manager
     public class Audit : IDisposable
     {
         private static EventLog customLog = null;
-        const string SourceName = "PubSubEngine.Audit";
-        const string LogName = "PubSub";
+        const string SourceName = "Subscriber.Audit"; //sub
+        const string LogName = "SubTest";
 
 
         static Audit()

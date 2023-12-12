@@ -12,15 +12,14 @@ namespace AES
     {
         public static string EncryptString(string s, string SecretKey)
         {
-            // byte[] sBytes = Convert.FromBase64String(s); //poslednja greska
-            byte[] sBytes = Encoding.UTF8.GetBytes(s);
+            byte[] sBytes = Encoding.ASCII.GetBytes(s);
             byte[] encryptedBytes = null;
             string encryptedString = "";
 
             AesCryptoServiceProvider aesCryptoProvider = new AesCryptoServiceProvider
             {
-                Key = Encoding.UTF8.GetBytes(SecretKey),
-            Mode = CipherMode.ECB,
+                Key = Encoding.ASCII.GetBytes(SecretKey),
+                Mode = CipherMode.ECB,
                 Padding = PaddingMode.PKCS7
             };
 
@@ -31,9 +30,10 @@ namespace AES
                 {
                     cryptoStream.Write(sBytes, 0, sBytes.Length);
                     encryptedBytes = memoryStream.ToArray();
-                    encryptedString = Convert.ToBase64String(encryptedBytes);
+                    //encryptedString = Encoding.ASCII.GetString(encryptedBytes); //van
                 }
             }
+            encryptedString = Encoding.ASCII.GetString(encryptedBytes); //van
             return encryptedString;
         }
     }

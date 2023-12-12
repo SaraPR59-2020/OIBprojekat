@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.ServiceModel.Description;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,6 +25,15 @@ namespace Subscriber
             //on hostuje mesto na kom prima podatke
             string addressSubForEngine = "net.tcp://localhost:4040";
             hostSubForEngine.AddServiceEndpoint(typeof(ISubForEngine), bindingSubForEngine, addressSubForEngine);
+
+
+            //audit
+            ServiceSecurityAuditBehavior newAudit = new ServiceSecurityAuditBehavior();
+            newAudit.AuditLogLocation = AuditLogLocation.Application;
+            newAudit.ServiceAuthorizationAuditLevel = AuditLevel.SuccessOrFailure;
+
+            hostSubForEngine.Description.Behaviors.Remove<ServiceSecurityAuditBehavior>();
+            hostSubForEngine.Description.Behaviors.Add(newAudit);
 
             hostSubForEngine.Open();
 

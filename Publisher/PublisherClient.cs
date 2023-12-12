@@ -1,5 +1,4 @@
 ﻿using Common;
-using Contracts;
 using PubSubEngine;
 using System;
 using System.Collections.Generic;
@@ -18,6 +17,7 @@ using AES;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Collections;
+using System.Security;
 
 namespace Publisher
 {
@@ -70,10 +70,13 @@ namespace Publisher
                 byte[] encryptedBytes = Encoding.UTF8.GetBytes(encryptedString);
                 byte[] combinedBytes = new byte[encryptedBytes.Length + sign.Length];
                 factory.SendDataToEngine(alarm, combinedBytes);*/
-                string alarmm = AES.Encryption.EncryptString(alarm, key);
-                String str1 = BitConverter.ToString(sign);
-                Console.WriteLine(str1);
-                factory.SendDataToEngine(alarmm, sign);
+                Console.WriteLine(key);
+                //string enkriptovanAlarm = AES.Encryption.EncryptString(alarm, key);
+                //Console.WriteLine("Enkriptovan alarm je: " + enkriptovanAlarm);
+                string enkriptovanString = AES.Encryption.EncryptString(alarm, key);
+                factory.SendDataToEngine(enkriptovanString, sign);
+
+                //factory.SendDataToEngine(enkriptovanAlarm, sign); //2
             }
             catch (Exception e)
             {

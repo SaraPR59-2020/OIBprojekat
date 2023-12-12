@@ -1,5 +1,4 @@
-﻿using Contracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,59 +15,72 @@ namespace PubSubEngine
 {
     public class PubSubService : IEngine
     { 
-
+        //3
         public void SendDataToEngine(string alarm, byte[] sign)
         {
+            //Console.WriteLine("ovde je");
             string publisherName = Formatter.ParseName(ServiceSecurityContext.Current.PrimaryIdentity.Name);
+            //Console.WriteLine("Korisnik je: " + publisherName);
 
             //pub
-            Console.WriteLine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName);
+            //Console.WriteLine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName);
             string startupPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keyPubEng.txt");
-            Console.WriteLine(startupPath);
-            string str = AES.SecretKey.LoadKey(startupPath);
-            Console.WriteLine(str);
-            string decrypedAlarm = AES.Decryption.DecryptString(alarm, str);
-            Console.WriteLine("4"); //proslo nesto
-            Console.WriteLine(decrypedAlarm);
+            //Console.WriteLine(startupPath);
+            string kljuc = AES.SecretKey.LoadKey(startupPath);
+            Console.WriteLine("Kljuc izgleda ovako: ");
+            Console.WriteLine(kljuc);
 
-            string[] parts = decrypedAlarm.Split(' ');
-            string at = parts[6]; //tip alarma
+            // Console.WriteLine("Dekripcija se desava ovde: ");
+
+
+            //string decrypedAlarm = AES.Decryption.DecryptString(alarm, kljuc);
+            //probati cao
+            //string decrypedAlarm = AES.Decryption.DecryptString(Encoding.ASCII.GetBytes(alarm), kljuc);
+            string decrypedString = AES.Decryption.DecryptString(Encoding.ASCII.GetBytes(alarm), kljuc);
+            Console.WriteLine("Dekriptovan string:");
+            //Console.WriteLine(decrypedAlarm);
+            Console.WriteLine(decrypedString);
+
+            /*string[] parts = decrypedAlarm.Split(' ');
+            string at = parts[0]; //tip alarma ce se odrediti na osnovu ovog broja
 
 
             Console.WriteLine(at.ToString());
-            AlarmType alarmType = (AlarmType)Enum.Parse(typeof(AlarmType), at); //kastuje u enum id obijem tip alarma
+            AlarmType alarmType = (AlarmType)Enum.Parse(typeof(AlarmType), at); //kastuje u enum id obijem tip alarma*/
+
 
             //sub
             Console.WriteLine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName);
             string startupPathSub = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keySubEng.txt");
 
-            UnicodeEncoding encoding = new UnicodeEncoding();
-            byte[] publisherNameBytes = encoding.GetBytes(publisherName);
+            //UnicodeEncoding encoding = new UnicodeEncoding();
+            byte[] publisherNameBytes = Encoding.ASCII.GetBytes(publisherName);
 
             foreach (Subscriber s in Base.subscribers.Values)
             {
-                X509Certificate2 subscriberCert = CertManager.GetCertificateFromStorage(StoreName.TrustedPeople, StoreLocation.LocalMachine, s.SubscriberName);
-                RSACryptoServiceProvider csp = (RSACryptoServiceProvider)subscriberCert.PublicKey.Key;
+               X509Certificate2 subscriberCert = CertManager.GetCertificateFromStorage(StoreName.TrustedPeople, StoreLocation.LocalMachine, s.SubscriberName);
+               RSACryptoServiceProvider csp = (RSACryptoServiceProvider)subscriberCert.PublicKey.Key;
 
-                foreach (AlarmType alarmTypee in s.Alarms)
-                {
-                    if (alarmTypee.Equals(alarmType))
+               foreach (AlarmType alarmTypee in s.Alarms)
+               {
+                   /* if (alarmTypee.Equals(alarmType))
                     {
                         s.Proxy.SendDataToSubscriber(AES.Encryption.EncryptString(decrypedAlarm, AES.SecretKey.LoadKey(startupPathSub)),
                                                     sign, csp.Encrypt(publisherNameBytes, false));
-                    }
-                }
+                    }*/
+               }
             }
+
         }
 
         public void Subscribe(string alarmTypes, string clientAddress)
         {
-            string subscriberName = Formatter.ParseName(ServiceSecurityContext.Current.PrimaryIdentity.Name);
+           /* string subscriberName = Formatter.ParseName(ServiceSecurityContext.Current.PrimaryIdentity.Name);
             Console.WriteLine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName);
             string startupPathSub = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keySubEng.txt");
-            string decryptedAddress = AES.Decryption.DecryptString(clientAddress, AES.SecretKey.LoadKey(startupPathSub));
+            //string decryptedAddress = AES.Decryption.DecryptString(Encoding.ASCII.GetBytes(clientAddress), AES.SecretKey.LoadKey(startupPathSub));
 
-            string decryptedAlarmTypes = AES.Decryption.DecryptString(alarmTypes, AES.SecretKey.LoadKey(startupPathSub));
+            string decryptedAlarmTypes = AES.Decryption.DecryptString(Encoding.ASCII.GetBytes(alarmTypes), AES.SecretKey.LoadKey(startupPathSub));
 
             string[] parts = decryptedAlarmTypes.Split(' ');
 
@@ -91,7 +103,7 @@ namespace PubSubEngine
 
             Base.subscribers.TryAdd(decryptedAddress, s);
 
-            Console.WriteLine("New subscriber!");
+            Console.WriteLine("New subscriber!"); */
         }
 
         public void TestCommunication()

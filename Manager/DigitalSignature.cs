@@ -29,8 +29,7 @@ namespace Manager
                 throw new Exception("Valid certificate was not found.");
             }
 
-            UnicodeEncoding encoding = new UnicodeEncoding();
-            byte[] data = encoding.GetBytes(alarm);
+            byte[] data = Encoding.ASCII.GetBytes(alarm);
 
 
             byte[] hash = null;

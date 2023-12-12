@@ -10,9 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Manager;
 using System.IO;
+using System.ServiceModel;
 
 namespace Subscriber
 {
+    [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
     public class SubForEngine : ISubForEngine
     {
         public void SendDataToSubscriber(string alarm, byte[] sign, byte[] publisherName)
@@ -27,8 +29,8 @@ namespace Subscriber
             byte[] publisherNameBytes = csp.Decrypt(publisherName, false);
 
             //niz bajtova pretvara u string
-            UnicodeEncoding encoding = new UnicodeEncoding();
-            string publisherNamee = encoding.GetString(publisherNameBytes);
+            //UnicodeEncoding encoding = new UnicodeEncoding();
+            string publisherNamee = Encoding.ASCII.GetString(publisherNameBytes);
 
             string publisherNameSign = publisherNamee + "_sign";
             X509Certificate2 certificate = CertManager.GetCertificateFromStorage(StoreName.TrustedPeople,
@@ -39,7 +41,7 @@ namespace Subscriber
 
             string subKeyPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keySubEng.txt");
             //alarm dekriptuje
-            string decryptedAlarm = AES.Decryption.DecryptString(alarm, AES.SecretKey.LoadKey(subKeyPath));
+            string decryptedAlarm = AES.Decryption.DecryptString(Encoding.ASCII.GetBytes(alarm), AES.SecretKey.LoadKey(subKeyPath));
 
             if (DigitalSignature.Verify(decryptedAlarm, Manager.HashAlgorithm.SHA1, sign, certificate))
             {
@@ -62,6 +64,17 @@ namespace Subscriber
                     sw.WriteLine("ID: {0} " + decryptedAlarm.ToString(), count + 1); //tip alarma
                     //da bi ovo moglo ovako obrisani su subkrajber i publiser klase 
                     sw.Close();
+
+                    //dodato za audit
+                    try
+                    {
+                        string str = Encoding.ASCII.GetString(sign);
+                        Audit.NewDataStored(DateTime.Now.ToString(), "database.txt", count + 1, str, certificate2.GetPublicKeyString());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 }
                 catch (Exception e)
                 {

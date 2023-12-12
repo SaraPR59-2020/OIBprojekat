@@ -10,44 +10,63 @@ namespace AES
 {
     public class Decryption
     {
-        public static string DecryptString(string s, string SecretKey)
+        /*public static string DecryptString( byte[] chyperText, string secretKey)
         {
-            Console.WriteLine("0");
-            string decryptedString = null;
-
-            byte[] encryptedBytes = Encoding.UTF8.GetBytes(s);
-            byte[] decryptedBytes = null;
-            Console.WriteLine("1");
+            string decryptedText = null;
 
             AesCryptoServiceProvider aesCryptoProvider = new AesCryptoServiceProvider
             {
-      
-                Key = Encoding.UTF8.GetBytes(SecretKey),
+                Key = ASCIIEncoding.ASCII.GetBytes(secretKey),
                 Mode = CipherMode.ECB,
                 Padding = PaddingMode.PKCS7
             };
-            Console.WriteLine("2");
 
             ICryptoTransform aesDecryptTransform = aesCryptoProvider.CreateDecryptor();
-            Console.WriteLine("3");
-            using (MemoryStream memoryStream = new MemoryStream(encryptedBytes))
+
+            using (MemoryStream memoryStream = new MemoryStream(chyperText.Skip(aesCryptoProvider.BlockSize / 8).ToArray()))
             {
                 using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aesDecryptTransform, CryptoStreamMode.Read))
                 {
-                      decryptedBytes = new byte[encryptedBytes.Length];
-                      Console.WriteLine(decryptedBytes.Length);
-                      cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
-                      Console.WriteLine("read"); //provera
-                      decryptedString = BitConverter.ToString(decryptedBytes);
-                      Console.WriteLine("4"); //provera  
-                    
+                    using (StreamReader reader = new StreamReader(cryptoStream, Encoding.UTF8))
+                    {
+                        decryptedText = reader.ReadToEnd();
+                    }
                 }
-
-
             }
 
-            return decryptedString;
-        }
+            return decryptedText;
+        }*/
+         public static string DecryptString(byte[] chyperText, string secretKey)
+         {
+             string decryptedString = null;
+
+             //byte[] encryptedBytes = Encoding.ASCII.GetBytes(secretKey);
+             byte[] decryptedBytes = null;
+
+             AesCryptoServiceProvider aesCryptoProvider = new AesCryptoServiceProvider
+             {
+
+                 Key = ASCIIEncoding.ASCII.GetBytes(secretKey),
+                 Mode = CipherMode.ECB,
+                 Padding = PaddingMode.PKCS7
+             };
+
+             ICryptoTransform aesDecryptTransform = aesCryptoProvider.CreateDecryptor();
+             using (MemoryStream memoryStream = new MemoryStream(chyperText))
+             {
+                 using (CryptoStream cryptoStream = new CryptoStream(memoryStream, aesDecryptTransform, CryptoStreamMode.Read))
+                 {
+                       decryptedBytes = new byte[chyperText.Length];
+                       cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
+                       //decryptedString = Encoding.ASCII.GetString(decryptedBytes);
+
+                 }
+             }
+             decryptedString = Encoding.ASCII.GetString(decryptedBytes); 
+             return decryptedString;
+         }
+
+        
 
     }
 }

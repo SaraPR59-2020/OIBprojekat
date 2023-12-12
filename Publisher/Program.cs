@@ -17,7 +17,9 @@ namespace Publisher
     {
 
         static void Main(string[] args)
-        {
+
+        { 
+
             string signCertCN = Formatter.ParseName(WindowsIdentity.GetCurrent().Name) + "_sign"; //kreiram digitalni sertf publisher_sign
             /// Define the expected service certificate. It is required to establish cmmunication using certificates.
             string pubsubCN = "PubSubEngine";
@@ -31,36 +33,37 @@ namespace Publisher
                                       new X509CertificateEndpointIdentity(srvCert));
             
 
-            PublisherClient proxy = new PublisherClient(binding, address);
-            Random r = new Random();
 
-            proxy.TestCommunication();
-            Console.WriteLine("TestCommunication() finished. Press <enter> to continue ...");
-
-            X509Certificate2 certificateSign = CertManager.GetCertificateFromStorage(StoreName.My,
-                   StoreLocation.LocalMachine, signCertCN); ///!!nadje sertf
-            Console.WriteLine(certificateSign); //nepotrebno ali dobra provera
-
-            //Console.ReadKey();
-
-            //ovo sve radi lepo - resx fajl i alarmmessage koji glumi menadzera radeeee!!!!
-            string alarmMessage = AlarmMessage.GetAlarmMessage;
-
-            while (true)
+            using(PublisherClient proxy = new PublisherClient(binding, address))
             {
-                int risk = r.Next(1, 100);
+                proxy.TestCommunication();
+                Console.WriteLine("TestCommunication() finished. Press <enter> to continue ...");
 
-                AlarmType alarmType = GetAlarmTypeForRisk(risk); //vraca tip alarma 
+                X509Certificate2 certificateSign = CertManager.GetCertificateFromStorage(StoreName.My,
+                   StoreLocation.LocalMachine, signCertCN); ///!!nadje sertf
 
-                string alarm = String.Format(alarmMessage, DateTime.Now, alarmType, risk);
-                Console.WriteLine(alarm);
-                Console.ReadKey();
+                Random r = new Random();
+                string alarmMessage = AlarmMessage.GetAlarmMessage;
+                while (true)
+                {
+                    int risk = r.Next(1, 100);
 
-                byte[] signature = DigitalSignature.Create(alarm, HashAlgorithm.SHA1, certificateSign); //ovde ne radi provajder za rsa
-                Console.WriteLine(alarm, signature);
-                proxy.SendDataToEngine(alarm, signature);
+                    AlarmType alarmType = GetAlarmTypeForRisk(risk); //vraca tip alarma 
 
-                Thread.Sleep(5000);
+                    //string alarm = String.Format(alarmMessage, DateTime.Now, alarmType, risk);
+                    string cao = "cao";
+                    Console.WriteLine(cao);
+                    Console.ReadKey();
+                    byte[] signature = null;
+
+                    //byte[] signature = DigitalSignature.Create(alarm, HashAlgorithm.SHA1, certificateSign);
+                    //proxy.SendDataToEngine(alarm, signature); //1
+                    proxy.SendDataToEngine(cao, signature);
+                    //proxy.SendDataToEngine(alarm, signature); //1
+                    Thread.Sleep(5000);
+
+                }
+                
 
             }
 

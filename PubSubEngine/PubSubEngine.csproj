@@ -66,10 +66,6 @@
       <Project>{e3440e57-e1cb-4e1d-906e-7b4061e9c169}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Contracts\Contracts.csproj">
-      <Project>{b1e37057-d105-4863-8715-5f23ccb7825f}</Project>
-      <Name>Contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Manager\Manager.csproj">
       <Project>{2c859a79-5e92-4946-84a4-3134211985f0}</Project>
       <Name>Manager</Name>
