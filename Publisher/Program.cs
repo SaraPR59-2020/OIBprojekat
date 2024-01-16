@@ -15,9 +15,7 @@ namespace Publisher
 {
     public class Program
     {
-
         static void Main(string[] args)
-
         { 
 
             string signCertCN = Formatter.ParseName(WindowsIdentity.GetCurrent().Name) + "_sign"; //kreiram digitalni sertf publisher_sign
@@ -31,8 +29,6 @@ namespace Publisher
             X509Certificate2 srvCert = CertManager.GetCertificateFromStorage(StoreName.Root, StoreLocation.LocalMachine, pubsubCN);
             EndpointAddress address = new EndpointAddress(new Uri("net.tcp://localhost:4001/PubSubService"),
                                       new X509CertificateEndpointIdentity(srvCert));
-            
-
 
             using(PublisherClient proxy = new PublisherClient(binding, address))
             {
@@ -50,46 +46,37 @@ namespace Publisher
 
                     AlarmType alarmType = GetAlarmTypeForRisk(risk); //vraca tip alarma 
 
-                    //string alarm = String.Format(alarmMessage, DateTime.Now, alarmType, risk);
-                    string cao = "cao";
-                    Console.WriteLine(cao);
-                    Console.ReadKey();
-                    byte[] signature = null;
-
-                    //byte[] signature = DigitalSignature.Create(alarm, HashAlgorithm.SHA1, certificateSign);
-                    //proxy.SendDataToEngine(alarm, signature); //1
-                    proxy.SendDataToEngine(cao, signature);
-                    //proxy.SendDataToEngine(alarm, signature); //1
+                    string alarm = String.Format(alarmMessage, DateTime.Now, alarmType, risk);
+                    Console.WriteLine(alarm);
+                    byte[] signature = DigitalSignature.Create(alarm, HashAlgorithm.SHA1, certificateSign);
+                    proxy.SendDataToEngine(alarm, signature);
                     Thread.Sleep(5000);
-
                 }
-                
-
             }
-
         }
 
         public static AlarmType GetAlarmTypeForRisk(int risk)
         {
             if (risk >= 0 && risk <= 20)
             {
-                return AlarmType.NO_ALARM;
+                return AlarmType.BEZ_ALARMA;
+
             }
             else if (risk >= 21 && risk <= 40)
             {
-                return AlarmType.FALSE_ALARM;
+                return AlarmType.LAŽNI_ALARM;
             }
             else if (risk >= 41 && risk <= 60)
             {
-                return AlarmType.INFO;
+                return AlarmType.INFORMACIJA;
             }
             else if (risk >= 61 && risk <= 80)
             {
-                return AlarmType.WARNING;
+                return AlarmType.UPOZORENJE;
             }
             else
             {
-                return AlarmType.ERROR;
+                return AlarmType.GREŠKA;
             }
         }
     }

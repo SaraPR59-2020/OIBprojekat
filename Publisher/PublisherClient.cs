@@ -13,7 +13,6 @@ using Manager;
 using Formatter = Manager.Formatter;
 using System.IO;
 using System.Security.Cryptography;
-using AES;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Collections;
@@ -59,24 +58,14 @@ namespace Publisher
         {
             try
             {
-                string key = AES.SecretKey.GenerateKey();
-                Console.WriteLine(alarm);
-                Console.WriteLine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName);
+                string key = SecretKey.GenerateKey();
                 string startupPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keyPubEng.txt");
                 SecretKey.StoreKey(key, startupPath);
-                //pravim bajtove, pozovem encr, vrati mi 
-                //factory.SendDataToEngine(AES.Encryption.EncryptString(alarm, key), sign); //greska
-                /*string encryptedString = AES.Encryption.EncryptString(alarm, key);
-                byte[] encryptedBytes = Encoding.UTF8.GetBytes(encryptedString);
-                byte[] combinedBytes = new byte[encryptedBytes.Length + sign.Length];
-                factory.SendDataToEngine(alarm, combinedBytes);*/
-                Console.WriteLine(key);
-                //string enkriptovanAlarm = AES.Encryption.EncryptString(alarm, key);
-                //Console.WriteLine("Enkriptovan alarm je: " + enkriptovanAlarm);
-                string enkriptovanString = AES.Encryption.EncryptString(alarm, key);
-                factory.SendDataToEngine(enkriptovanString, sign);
+                string enkriptovanString = "";
+                AES.EncryptString(alarm, out enkriptovanString,  key);
+                factory.SendDataToEngine(enkriptovanString, sign); 
+                
 
-                //factory.SendDataToEngine(enkriptovanAlarm, sign); //2
             }
             catch (Exception e)
             {

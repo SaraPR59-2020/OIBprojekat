@@ -24,10 +24,10 @@ namespace PubSubEngine
             {
                 throw new Exception("Serverski sertifikat nije self-signed.");
             }
-            /*if (!certificate.SubjectName.Name.Equals("CN=" + srvCertCN))
+            if (!certificate.SubjectName.Name.Equals("CN=PubSubEngine"))
             {
                 throw new Exception("CN nije odgovarajuci.");
-            }*/
+            }
             if (Convert.ToDateTime(certificate.GetExpirationDateString()) < DateTime.Now)
             {
                 throw new Exception("Serverski sertifikat je istekao.");

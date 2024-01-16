@@ -18,8 +18,7 @@ namespace PubSubEngine
     {
         static void Main(string[] args)
         {
-            /// srvCertCN.SubjectName should be set to the service's username. .NET WindowsIdentity class provides information about Windows user running the given process
-			string srvCertCN = Formatter.ParseName(WindowsIdentity.GetCurrent().Name);
+            string srvCertCN = "PubSubEngine";
             Console.WriteLine(srvCertCN);
 
             NetTcpBinding binding = new NetTcpBinding();
@@ -32,30 +31,16 @@ namespace PubSubEngine
             ///Custom validation mode enables creation of a custom validator - CustomCertificateValidator
             host.Credentials.ClientCertificate.Authentication.CertificateValidationMode = X509CertificateValidationMode.Custom;
             host.Credentials.ClientCertificate.Authentication.CustomCertificateValidator = new ServiceCertValidator();
-
-            //dodati ono sto je duska rekla da se detaljnije ispise greska
-            host.Description.Behaviors.Remove(
-                 typeof(ServiceDebugBehavior));
-            host.Description.Behaviors.Add(
-                new ServiceDebugBehavior { IncludeExceptionDetailInFaults = true });
-
-            ///If CA doesn't have a CRL associated, WCF blocks every client because it cannot be validated
-            host.Credentials.ClientCertificate.Authentication.RevocationMode = X509RevocationMode.NoCheck;
-           
-
-            ///Set appropriate service's certificate on the host. Use CertManager class to obtain the certificate based on the "srvCertCN"
-            host.Credentials.ServiceCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, srvCertCN);
-            //Console.WriteLine(CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, srvCertCN));
-
             
-            //host.Open();
-            //Console.ReadLine();
+            host.Credentials.ClientCertificate.Authentication.RevocationMode = X509RevocationMode.NoCheck;
+            host.Credentials.ServiceCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, srvCertCN);
 
+            //Audit audit = new Audit(); //napravi audit
             try
             {
                 host.Open();
-                Console.WriteLine("+++++++++ PUBLISH-SUBSCRIBE SERVIS JE USPESNO POKRENUT +++++++++");
-                Console.WriteLine("Pitisnite [ENTER] za prekid.");
+                Console.WriteLine("+++++++++ PUBLISH-SUBSCRIBE ENGINE +++++++++");
+                Console.WriteLine("Press [ENTER] to end.");
                 Console.ReadKey();
             }
             catch (Exception e)

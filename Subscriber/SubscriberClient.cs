@@ -16,13 +16,6 @@ namespace Subscriber
 
     {
         IEngine factory;
-
-        public SubscriberClient(NetTcpBinding binding, string address) : base(binding, address) 
-        {
-            factory = this.CreateChannel();
-        }
-
-
         public SubscriberClient(NetTcpBinding binding, EndpointAddress address)
             : base(binding, address)
         {
@@ -38,7 +31,6 @@ namespace Subscriber
             this.Credentials.ClientCertificate.Certificate = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, cltCertCN);
             factory = this.CreateChannel();
         }
-
          public void TestCommunication()
          {
              try
@@ -50,7 +42,6 @@ namespace Subscriber
                  Console.WriteLine("[TestCommunication] ERROR = {0}", e.Message);
              }
          }
-
          public void Dispose()
          {
              if (factory != null)
@@ -60,12 +51,11 @@ namespace Subscriber
 
              this.Close();
          }
-
         public void Subscribe(string alarmTypes, string clientAddress)
         {
             try
             {
-                factory.Subscribe(alarmTypes, clientAddress); //greska
+                factory.Subscribe(alarmTypes, clientAddress); 
             }
             catch (Exception e)
             {
@@ -73,7 +63,6 @@ namespace Subscriber
                 Console.ReadLine();
             }
         }
-
         public void Unsubscribe(string clientAddress)
         {
             try

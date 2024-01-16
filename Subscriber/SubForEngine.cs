@@ -17,9 +17,15 @@ namespace Subscriber
     [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
     public class SubForEngine : ISubForEngine
     {
+        public void Connect()
+        {
+            Console.WriteLine("radiiiiii");
+        }
+
         public void SendDataToSubscriber(string alarm, byte[] sign, byte[] publisherName)
         {
-        
+
+            Console.WriteLine(publisherName);
             //sertf od subs
             string srvCertCN = Formatter.ParseName(WindowsIdentity.GetCurrent().Name);
             X509Certificate2 subscriberCert = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, srvCertCN);
@@ -29,22 +35,28 @@ namespace Subscriber
             byte[] publisherNameBytes = csp.Decrypt(publisherName, false);
 
             //niz bajtova pretvara u string
-            //UnicodeEncoding encoding = new UnicodeEncoding();
             string publisherNamee = Encoding.ASCII.GetString(publisherNameBytes);
+            Console.WriteLine("pubname: ");
+            Console.WriteLine(publisherNamee);
 
             string publisherNameSign = publisherNamee + "_sign";
             X509Certificate2 certificate = CertManager.GetCertificateFromStorage(StoreName.TrustedPeople,
                 StoreLocation.LocalMachine, publisherNameSign); //za dp
+            Console.WriteLine(certificate);
 
-            X509Certificate2 certificate2 = CertManager.GetCertificateFromStorage(StoreName.TrustedPeople,
+            X509Certificate2 certificate2 = CertManager.GetCertificateFromStorage(StoreName.Root,
                 StoreLocation.LocalMachine, publisherNamee); //za komunikaciju
 
             string subKeyPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keySubEng.txt");
             //alarm dekriptuje
-            string decryptedAlarm = AES.Decryption.DecryptString(Encoding.ASCII.GetBytes(alarm), AES.SecretKey.LoadKey(subKeyPath));
+            string decryptedAlarm = "";
+            AES.DecryptString(alarm, out decryptedAlarm, subKeyPath);
+
+            Console.WriteLine("zdravo");
 
             if (DigitalSignature.Verify(decryptedAlarm, Manager.HashAlgorithm.SHA1, sign, certificate))
             {
+                Console.WriteLine("sara");
                 Console.WriteLine("Sign is valid");
                 Console.WriteLine(decryptedAlarm);
 
@@ -62,14 +74,15 @@ namespace Subscriber
 
                     StreamWriter sw = new StreamWriter("database.txt", true); //upis
                     sw.WriteLine("ID: {0} " + decryptedAlarm.ToString(), count + 1); //tip alarma
-                    //da bi ovo moglo ovako obrisani su subkrajber i publiser klase 
                     sw.Close();
 
-                    //dodato za audit
                     try
                     {
-                        string str = Encoding.ASCII.GetString(sign);
+                        UnicodeEncoding encoding = new UnicodeEncoding();
+                        string str = encoding.GetString(sign);
+                        Console.WriteLine("jovana"); //ne dodje
                         Audit.NewDataStored(DateTime.Now.ToString(), "database.txt", count + 1, str, certificate2.GetPublicKeyString());
+                        Console.WriteLine("marija"); //ne dodje 
                     }
                     catch (Exception e)
                     {

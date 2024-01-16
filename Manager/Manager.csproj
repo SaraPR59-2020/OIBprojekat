@@ -42,25 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlarmMessage.cs" />
     <Compile Include="Audit.cs" />
     <Compile Include="CertManager.cs" />
     <Compile Include="ClientsCertValidator.cs" />
     <Compile Include="DigitalSignature.cs" />
     <Compile Include="Formatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AlarmMessageFile.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AlarmMessageFile.resx</DependentUpon>
-    </Compile>
     <Compile Include="ServiceCertValidator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="AlarmMessageFile.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>AlarmMessageFile.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

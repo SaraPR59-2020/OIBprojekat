@@ -10,6 +10,7 @@ namespace PubSubEngine
 {
     static class Base
     {
-        internal static ConcurrentDictionary<string, Subscriber> subscribers = new ConcurrentDictionary<string, Subscriber>();
+        internal static ConcurrentDictionary<string, Subscriber> Subscribers = new ConcurrentDictionary<string, Subscriber>();
+
     }
 }

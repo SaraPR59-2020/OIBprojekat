@@ -43,10 +43,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlarmMessage.cs" />
+    <Compile Include="AlarmMessageFile.Designer.cs">
+      <DependentUpon>AlarmMessageFile.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="AlarmType.cs" />
+    <Compile Include="AES.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="ISubForEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SecretKey.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AlarmMessageFile.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AlarmMessageFile.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

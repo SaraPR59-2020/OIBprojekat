@@ -20,21 +20,21 @@ namespace PubSubEngine
 		/// <param name="certificate"> certificate to be validate </param>
 		public override void Validate(X509Certificate2 certificate)
         {
-            Console.WriteLine(certificate);
+            //Console.WriteLine(certificate);
             /// This will take service's certificate from storage
             X509Certificate2 srvCert = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine,
                 Formatter.ParseName(WindowsIdentity.GetCurrent().Name));
 
-            Console.WriteLine(srvCert);
+            //Console.WriteLine(srvCert);
             if (!certificate.Issuer.Equals(srvCert.SubjectName.Name))
             {
-                throw new Exception("Klijentski sertifikat nije izdat od PubSubEnginea.");
+                throw new Exception("Klijentski sertifikat nije izdat od PubSubEngine-a.");
             }
 
-            /*if (Convert.ToDateTime(certificate.GetExpirationDateString()) < DateTime.Now)
+            if (Convert.ToDateTime(certificate.GetExpirationDateString()) < DateTime.Now)
             {
                 throw new Exception("Klijentski sertifikat je istekao.");
-            }*/
+            }
 
         }
     }

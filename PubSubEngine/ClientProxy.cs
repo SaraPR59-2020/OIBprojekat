@@ -19,18 +19,23 @@ namespace PubSubEngine
 
         }
 
-        public ClientProxy(NetTcpBinding binding, EndpointAddress address) : base(binding, address)
+        public void Connect()
         {
-            factory = this.CreateChannel();
-            
+            try
+            {
+                factory.Connect();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: {0}", e);
+            }
         }
-
 
         public void SendDataToSubscriber(string alarm, byte[] sign, byte[] publisherName)
         {
             try
             {
-                factory.SendDataToSubscriber(alarm, sign, publisherName);
+                factory.SendDataToSubscriber(alarm, sign, publisherName); //greska
             }
             catch (Exception e)
             {

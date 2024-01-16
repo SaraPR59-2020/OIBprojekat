@@ -11,15 +11,15 @@ namespace Common
     public enum AlarmType
     {
         [EnumMember]
-        NO_ALARM,
+        BEZ_ALARMA,
         [EnumMember]
-        FALSE_ALARM,
+        LAŽNI_ALARM,
         [EnumMember]
-        INFO,
+        INFORMACIJA,
         [EnumMember]
-        WARNING,
+        UPOZORENJE,
         [EnumMember]
-        ERROR
-
+        GREŠKA
     }
+
 }
