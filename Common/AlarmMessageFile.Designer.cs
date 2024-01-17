@@ -39,7 +39,7 @@ namespace Common {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Manager.AlarmMessageFile", typeof(AlarmMessageFile).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Common.AlarmMessageFile", typeof(AlarmMessageFile).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,7 @@ namespace Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}: {1} alarm occurred, current risk is: {2}..
+        ///   Looks up a localized string similar to {0}: {1} alarm definisan, trenutni rizik je: {2}..
         /// </summary>
         internal static string Alarm {
             get {

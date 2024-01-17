@@ -3,6 +3,7 @@ using Manager;
 using PubSubEngine;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -18,15 +19,14 @@ namespace Subscriber
     {
         static void Main(string[] args)
         {
+            //Debugger.Launch();
             NetTcpBinding bindingSubForEngine = new NetTcpBinding();
 
+            string input = Console.ReadLine();
             ServiceHost hostSubForEngine = new ServiceHost(typeof(SubForEngine));
-
-            //on hostuje mesto na kom prima podatke
-            //string addressSubForEngine = "net.tcp://localhost:4001/ISubForEngine";
-            string addressSubForEngine = hostSubForEngine.BaseAddresses.First().ToString();
+            string addressSubForEngine = $"net.tcp://localhost:{input}/SubForEngine";
             hostSubForEngine.AddServiceEndpoint(typeof(ISubForEngine), bindingSubForEngine, addressSubForEngine);
-
+            
             //audit
             Audit audit = new Audit();
             ServiceSecurityAuditBehavior newAudit = new ServiceSecurityAuditBehavior();
@@ -35,7 +35,6 @@ namespace Subscriber
 
             hostSubForEngine.Description.Behaviors.Remove<ServiceSecurityAuditBehavior>();
             hostSubForEngine.Description.Behaviors.Add(newAudit);
-
             hostSubForEngine.Open();
 
             //veza za sertifikat
@@ -115,10 +114,10 @@ namespace Subscriber
 
                         string encryptedAlarmTypes = "";
                         AES.EncryptString(alarmTypess, out encryptedAlarmTypes, key);
-                        string encryptedAddressForEngine = "";
-                        AES.EncryptString(addressSubForEngine, out encryptedAddressForEngine, key);
+                        //string encryptedAddressForEngine = "";
+                        //AES.EncryptString(addressSubForEngine, out encryptedAddressForEngine, key);
 
-                        proxy.Subscribe(encryptedAlarmTypes, encryptedAddressForEngine); 
+                        proxy.Subscribe(encryptedAlarmTypes, addressSubForEngine); 
 
                         Console.WriteLine("Pritisnite x za gasenje:");
 

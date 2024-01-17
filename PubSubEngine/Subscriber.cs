@@ -11,6 +11,7 @@ namespace PubSubEngine
     {
         List<AlarmType> alarms;
         ClientProxy proxy;
+        //string proxy;
         string subscriberName;
 
         public Subscriber(List<AlarmType> alarms, ClientProxy proxy, string subscriberName)

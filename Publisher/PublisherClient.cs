@@ -64,8 +64,6 @@ namespace Publisher
                 string enkriptovanString = "";
                 AES.EncryptString(alarm, out enkriptovanString,  key);
                 factory.SendDataToEngine(enkriptovanString, sign); 
-                
-
             }
             catch (Exception e)
             {

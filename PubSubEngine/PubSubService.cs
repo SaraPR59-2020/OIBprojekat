@@ -27,73 +27,57 @@ namespace PubSubEngine
 
             string decryptedAlarm = "";
             AES.DecryptString(alarm, out decryptedAlarm, kljuc);
+                string[] parts = decryptedAlarm.Split(' ');
+                string at = parts[3]; //tip alarma ce se odrediti na osnovu ovog broja
+                AlarmType alarmType = (AlarmType)Enum.Parse(typeof(AlarmType), at);
 
-            string[] parts = decryptedAlarm.Split(' ');
-            string at = parts[3]; //tip alarma ce se odrediti na osnovu ovog broja
-            Console.WriteLine(at);
-            AlarmType alarmType = (AlarmType)Enum.Parse(typeof(AlarmType), at);
-            Console.WriteLine(alarmType);
+                //sub
+                string startupPathSub = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keySubEng.txt");
+                byte[] publisherNameBytes = Encoding.ASCII.GetBytes(publisherName);
 
-            //sub
-            string startupPathSub = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keySubEng.txt");
-            byte[] publisherNameBytes = Encoding.ASCII.GetBytes(publisherName);
-
-            foreach (Subscriber s in Base.Subscribers.Values)
-            {
-                try
+                foreach (Subscriber s in Base.Subscribers.Values)
                 {
-                    X509Certificate2 subscriberCert = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, s.SubscriberName);
-                    RSACryptoServiceProvider csp = (RSACryptoServiceProvider)subscriberCert.PublicKey.Key;
-                    foreach (AlarmType currentAlarm in s.Alarms)
+                    try
                     {
-                        Console.WriteLine("Processing alarm...");
-
-                        Console.WriteLine($"Alarm Type: {currentAlarm}");
-
-                        if (currentAlarm.Equals(alarmType))
+                        X509Certificate2 subscriberCert = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, s.SubscriberName);
+                        RSACryptoServiceProvider csp = (RSACryptoServiceProvider)subscriberCert.PublicKey.Key;
+                        foreach (AlarmType currentAlarm in s.Alarms)
                         {
-                            string encryptedAlarm = "";
-                            AES.EncryptString(decryptedAlarm, out encryptedAlarm, SecretKey.LoadKey(startupPathSub));
-
-                            Console.WriteLine($"Subscriber Name: {s.SubscriberName}");
-                            Console.WriteLine($"Factory: {s.Proxy}");
-
-                            s.Proxy.SendDataToSubscriber(encryptedAlarm, sign, csp.Encrypt(publisherNameBytes, false)); //problem
+                            if (currentAlarm.Equals(alarmType))
+                            {
+                                string encryptedAlarm = "";
+                                AES.EncryptString(decryptedAlarm, out encryptedAlarm, SecretKey.LoadKey(startupPathSub));
+                                Console.WriteLine($"Sending {decryptedAlarm} to subscriber...");
+                                s.Proxy.SendDataToSubscriber(encryptedAlarm, sign, csp.Encrypt(publisherNameBytes, false));
+                            }
                         }
-                        else
-                        {
-                            Console.WriteLine("Error: Alarm types do not match.");
-                        }
+
                     }
 
+                    catch (NullReferenceException ex)
+                    {
+                        // Handle the NullReferenceException
+                        Console.WriteLine($"Null reference exception: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle other exceptions
+                        Console.WriteLine($"An error occurred: {ex.Message}");
+                    }
                 }
-                catch (NullReferenceException ex)
-                {
-                    // Handle the NullReferenceException
-                    Console.WriteLine($"Null reference exception: {ex.Message}");
-                }
-                catch (Exception ex)
-                {
-                    // Handle other exceptions
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                }
-            }
+            
         }
         public void Subscribe(string alarmTypes, string clientAddress)
         {
             string subscriberName = Formatter.ParseName(ServiceSecurityContext.Current.PrimaryIdentity.Name);
             string startupPathSub = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keySubEng.txt");
-            string decryptedAddress = "";
-                AES.DecryptString(clientAddress, out decryptedAddress, SecretKey.LoadKey(startupPathSub));
-            Console.WriteLine("dekriptovana: " + decryptedAddress);
             string decryptedAlarmTypes = "";
                 AES.DecryptString(alarmTypes, out decryptedAlarmTypes, SecretKey.LoadKey(startupPathSub));
-            Console.WriteLine("dat" + decryptedAlarmTypes);
             string[] parts = decryptedAlarmTypes.Trim().Split(' ');
 
             List<AlarmType> alarmTypess = new List<AlarmType>();
+
             string last = parts.Last(); //ovo mora jer trim ne uradi to sto mu treba PA NAM POJEDE SLEDECI
-            //Console.WriteLine("last" + last); OVDE ON U STVARI ISPISE PRAYNO
             foreach (string part in parts)
             {
                 if (!part.Equals(last))
@@ -102,21 +86,17 @@ namespace PubSubEngine
                     {
                         break;
                     }
-                    Console.WriteLine("ispis" + (AlarmType)Enum.Parse(typeof(AlarmType), part));
                     alarmTypess.Add((AlarmType)Enum.Parse(typeof(AlarmType), part));
                 }
             }
 
             //pravimo kanal sa subskrajbovanim klijentom da moze da posalje poruku
             NetTcpBinding binding = new NetTcpBinding();
-            using (ClientProxy pr = new ClientProxy(binding, decryptedAddress))
-            {
-                Subscriber s = new Subscriber(alarmTypess, pr, subscriberName);
-                Console.WriteLine("PROXYYYYY" + s.Proxy.ToString());
-                Base.Subscribers.TryAdd(decryptedAddress, s);
-                Console.WriteLine("New subscriber!");
-            }
-
+            ClientProxy pr = new ClientProxy(binding, clientAddress);
+            
+            Subscriber s = new Subscriber(alarmTypess, pr, subscriberName);
+            Base.Subscribers.TryAdd(clientAddress, s);
+            Console.WriteLine("New subscriber!");
         }
         public void TestCommunication()
         {

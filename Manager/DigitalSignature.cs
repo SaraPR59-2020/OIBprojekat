@@ -30,8 +30,6 @@ namespace Manager
             }
 
             byte[] data = Encoding.ASCII.GetBytes(alarm);
-
-
             byte[] hash = null;
 
             if (hashAlgorithm.Equals(HashAlgorithm.SHA1))
@@ -56,8 +54,6 @@ namespace Manager
 
             UnicodeEncoding encoding = new UnicodeEncoding();
             byte[] data = encoding.GetBytes(alarm);
-
-
             byte[] hash = null;
 
             if (hashAlgorithm.Equals(HashAlgorithm.SHA1))

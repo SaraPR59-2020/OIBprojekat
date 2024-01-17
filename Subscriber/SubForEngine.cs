@@ -11,21 +11,15 @@ using System.Threading.Tasks;
 using Manager;
 using System.IO;
 using System.ServiceModel;
+using System.Collections;
 
 namespace Subscriber
 {
     [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
     public class SubForEngine : ISubForEngine
     {
-        public void Connect()
-        {
-            Console.WriteLine("radiiiiii");
-        }
-
         public void SendDataToSubscriber(string alarm, byte[] sign, byte[] publisherName)
         {
-
-            Console.WriteLine(publisherName);
             //sertf od subs
             string srvCertCN = Formatter.ParseName(WindowsIdentity.GetCurrent().Name);
             X509Certificate2 subscriberCert = CertManager.GetCertificateFromStorage(StoreName.My, StoreLocation.LocalMachine, srvCertCN);
@@ -36,70 +30,61 @@ namespace Subscriber
 
             //niz bajtova pretvara u string
             string publisherNamee = Encoding.ASCII.GetString(publisherNameBytes);
-            Console.WriteLine("pubname: ");
-            Console.WriteLine(publisherNamee);
 
             string publisherNameSign = publisherNamee + "_sign";
             X509Certificate2 certificate = CertManager.GetCertificateFromStorage(StoreName.TrustedPeople,
                 StoreLocation.LocalMachine, publisherNameSign); //za dp
-            Console.WriteLine(certificate);
 
-            X509Certificate2 certificate2 = CertManager.GetCertificateFromStorage(StoreName.Root,
+            X509Certificate2 certificate2 = CertManager.GetCertificateFromStorage(StoreName.My,
                 StoreLocation.LocalMachine, publisherNamee); //za komunikaciju
 
             string subKeyPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "keySubEng.txt");
-            //alarm dekriptuje
+            string kljuc = SecretKey.LoadKey(subKeyPath);
             string decryptedAlarm = "";
-            AES.DecryptString(alarm, out decryptedAlarm, subKeyPath);
+            AES.DecryptString(alarm, out decryptedAlarm, kljuc);
 
-            Console.WriteLine("zdravo");
-
-            if (DigitalSignature.Verify(decryptedAlarm, Manager.HashAlgorithm.SHA1, sign, certificate))
-            {
-                Console.WriteLine("sara");
-                Console.WriteLine("Sign is valid");
-                Console.WriteLine(decryptedAlarm);
-
-                try
+                if (!DigitalSignature.Verify(decryptedAlarm, Manager.HashAlgorithm.SHA1, sign, certificate))
                 {
-                    int count;
-                    try
-                    {
-                        count = File.ReadAllLines("database.txt").Length;
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        count = 0;
-                    }
-
-                    StreamWriter sw = new StreamWriter("database.txt", true); //upis
-                    sw.WriteLine("ID: {0} " + decryptedAlarm.ToString(), count + 1); //tip alarma
-                    sw.Close();
+                    Console.WriteLine("Sign is valid");
+                    Console.WriteLine(decryptedAlarm);
 
                     try
                     {
-                        UnicodeEncoding encoding = new UnicodeEncoding();
-                        string str = encoding.GetString(sign);
-                        Console.WriteLine("jovana"); //ne dodje
-                        Audit.NewDataStored(DateTime.Now.ToString(), "database.txt", count + 1, str, certificate2.GetPublicKeyString());
-                        Console.WriteLine("marija"); //ne dodje 
+                        int count;
+                        try
+                        {
+                            count = File.ReadAllLines("database.txt").Length;
+                        }
+                        catch (FileNotFoundException)
+                        {
+                            count = 0;
+                        }
+
+                        StreamWriter sw = new StreamWriter("database.txt", true); //upis
+                        sw.WriteLine("ID: {0} " + decryptedAlarm.ToString(), count + 1); //tip alarma
+                        sw.Close();
+
+                        try
+                        {
+                            UnicodeEncoding encoding = new UnicodeEncoding();
+                            string str = encoding.GetString(sign);
+                            Audit.NewDataStored(DateTime.Now.ToString(), "database.txt", count + 1, str, certificate2.GetPublicKeyString());
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e.Message);
                     }
+
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.WriteLine(e.Message);
+                    Console.WriteLine("Sign is invalid");
                 }
-
-            }
-            else
-            {
-                Console.WriteLine("Sign is invalid");
-            }
-
         }
     }
     

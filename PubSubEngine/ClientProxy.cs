@@ -18,17 +18,9 @@ namespace PubSubEngine
             factory = this.CreateChannel();
 
         }
-
-        public void Connect()
+        public ClientProxy(NetTcpBinding binding, EndpointAddress address) : base(binding, address)
         {
-            try
-            {
-                factory.Connect();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error: {0}", e);
-            }
+            factory = this.CreateChannel();
         }
 
         public void SendDataToSubscriber(string alarm, byte[] sign, byte[] publisherName)

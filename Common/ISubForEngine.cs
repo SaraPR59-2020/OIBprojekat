@@ -13,7 +13,5 @@ namespace Common
         [OperationContract]
         void SendDataToSubscriber(string alarm, byte[] sign, byte[] publisherName);
 
-        [OperationContract]
-        void Connect();
     }
 }

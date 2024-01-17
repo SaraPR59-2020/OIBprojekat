@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens;
 using Manager;
 using Common;
 using System.ServiceModel.Description;
+using System.Diagnostics;
 
 namespace PubSubEngine
 {
@@ -18,6 +19,7 @@ namespace PubSubEngine
     {
         static void Main(string[] args)
         {
+            //Debugger.Launch();
             string srvCertCN = "PubSubEngine";
             Console.WriteLine(srvCertCN);
 

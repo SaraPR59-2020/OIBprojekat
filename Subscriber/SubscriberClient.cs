@@ -16,8 +16,12 @@ namespace Subscriber
 
     {
         IEngine factory;
-        public SubscriberClient(NetTcpBinding binding, EndpointAddress address)
-            : base(binding, address)
+
+        public SubscriberClient(NetTcpBinding binding, string address) : base(binding, address)
+        {
+            factory = this.CreateChannel();
+        }
+        public SubscriberClient(NetTcpBinding binding, EndpointAddress address)  : base(binding, address)
         {
             /// cltCertCN.SubjectName should be set to the client's username. .NET WindowsIdentity class provides information about Windows user running the given process
             string cltCertCN = Formatter.ParseName(WindowsIdentity.GetCurrent().Name);
